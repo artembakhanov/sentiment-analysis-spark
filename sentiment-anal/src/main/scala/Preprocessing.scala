@@ -4,6 +4,7 @@ import org.apache.log4j.{Level, Logger}
 import org.apache.spark.ml.feature.{RegexTokenizer, StopWordsRemover, Word2VecModel}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.regexp_replace
+import org.apache.spark.sql.types.FloatType
 import org.apache.spark.{SparkConf, SparkContext}
 
 class Preprocessing(spark: SparkSession) {
@@ -64,6 +65,14 @@ class Preprocessing(spark: SparkSession) {
 
     df = df.drop("Text", "Tokens", "Filtered")
 
+    df = df.withColumnRenamed("Sentiment", "label")
+    df = df.withColumnRenamed("Vec", "features")
+    df = df.withColumn("labeltmp", df.col("label").cast(FloatType))
+      .drop("label")
+      .withColumnRenamed("labeltmp", "label")
+
+    df = df.drop("_c0")
+
     df
   }
 
@@ -71,11 +80,19 @@ class Preprocessing(spark: SparkSession) {
 
     var df = prep(df_train)
 
-    val word2VecModel = new TrainWord2Vec(df, 5, 10).word2VecModel
+    val word2VecModel = new TrainWord2Vec(df, 25, 15).word2VecModel
 
     df = word2VecModel.transform(df)
 
     df = df.drop("Text", "Tokens", "Filtered")
+
+    df = df.withColumnRenamed("Sentiment", "label")
+    df = df.withColumnRenamed("Vec", "features")
+    df = df.withColumn("labeltmp", df.col("label").cast(FloatType))
+      .drop("label")
+      .withColumnRenamed("labeltmp", "label")
+
+    df = df.drop("_c0")
 
     df
   }
