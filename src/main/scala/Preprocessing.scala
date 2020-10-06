@@ -1,7 +1,7 @@
 import org.apache.spark.ml.feature.{RegexTokenizer, StopWordsRemover, Word2VecModel}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.regexp_replace
-import org.apache.spark.sql.types.FloatType
+import org.apache.spark.sql.types.{DoubleType, FloatType}
 
 class Preprocessing(spark: SparkSession, vec_size: Int, min_count: Int) {
 
@@ -66,7 +66,7 @@ class Preprocessing(spark: SparkSession, vec_size: Int, min_count: Int) {
 
     df = df.withColumnRenamed("Sentiment", "label")
     df = df.withColumnRenamed("Vec", "features")
-    df = df.withColumn("labeltmp", df.col("label").cast(FloatType))
+    df = df.withColumn("labeltmp", df.col("label").cast(DoubleType))
       .drop("label")
       .withColumnRenamed("labeltmp", "label")
 
@@ -88,7 +88,7 @@ class Preprocessing(spark: SparkSession, vec_size: Int, min_count: Int) {
 
     df = df.withColumnRenamed("Sentiment", "label")
     df = df.withColumnRenamed("Vec", "features")
-    df = df.withColumn("labeltmp", df.col("label").cast(FloatType))
+    df = df.withColumn("labeltmp", df.col("label").cast(DoubleType))
       .drop("label")
       .withColumnRenamed("labeltmp", "label")
 

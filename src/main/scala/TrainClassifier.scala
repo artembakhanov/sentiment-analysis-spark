@@ -3,7 +3,10 @@ import org.apache.spark.ml.classification.{LogisticRegression, LogisticRegressio
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
 import org.apache.spark.ml.tuning.{CrossValidator, CrossValidatorModel, ParamGridBuilder}
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.{DataFrame, SparkSession, SQLContext}
+import org.apache.spark.ml.linalg.DenseVector
+import org.apache.spark.ml.linalg.Vector
+import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics
 
 object TrainClassifier {
 
@@ -43,6 +46,24 @@ object TrainClassifier {
 
     randomForestClassificationModel
   }
+
+  def calc_f1Score(sc: SparkContext, predictions: DataFrame): Tuple2[Double, Double] = {
+    val sqlContext= new SQLContext(sc)
+    import sqlContext.implicits._
+
+    val preds = predictions.map(x => (x.getAs[Vector]("probability")(1), x.getAs[Double]("label"))).rdd
+
+    val metrics = new BinaryClassificationMetrics(preds)
+
+    val f1Score = metrics.fMeasureByThreshold
+      .map(row => ((math rint row._1 * 100) / 100, row._2))
+      .filter(row => row._1 > 0.0)
+      .reduceByKey((row1, row2) => (row1 + row2) / 2.0)
+      .collect()
+
+    f1Score.maxBy(_._2) //threshold and f1 score
+  }
+
 
   def main(args: Array[String]): Unit = {
     Logger.getLogger("org.apache.spark").setLevel(Level.ERROR)
@@ -94,7 +115,7 @@ object TrainClassifier {
     val accuracy1 = evaluator1.evaluate(predictions1)
     print("Accuracy: ")
     println(accuracy1)
-
+    println(s"The best f1 score: ${calc_f1Score(sc, predictions1)}")
 
     // training Random Forest Model
     val randomForestModel = train_RandForest(df_train)
@@ -114,6 +135,7 @@ object TrainClassifier {
     val accuracy2 = evaluator2.evaluate(predictions2)
     print("Accuracy: ")
     println(accuracy2)
+    println(s"The best f1 score: ${calc_f1Score(sc, predictions2)}")
 
   }
 }
