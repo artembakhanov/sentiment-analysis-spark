@@ -35,21 +35,6 @@ object TrainClassifier {
     df_train = preprocessing.prep_train(df_train)
     df_test = preprocessing.prep_test(df_test)
 
-//    df_train = df_train.withColumnRenamed("Sentiment", "label")
-//    df_train = df_train.withColumnRenamed("Vec", "features")
-//    df_train = df_train.withColumn("labeltmp", df_train.col("label").cast(FloatType))
-//      .drop("label")
-//      .withColumnRenamed("labeltmp", "label")
-//
-//    df_test = df_test.withColumnRenamed("Sentiment", "label")
-//    df_test = df_test.withColumnRenamed("Vec", "features")
-//    df_test = df_test.withColumn("labeltmp", df_test.col("label").cast(FloatType))
-//      .drop("label")
-//      .withColumnRenamed("labeltmp", "label")
-//
-//    df_train = df_train.drop("_c0")
-//    df_test = df_test.drop("_c0")
-
     println("Training")
     df_train.show(20, false)
 
@@ -85,6 +70,8 @@ object TrainClassifier {
     val accuracy = evaluator.evaluate(predicitons)
     print("Accuracy: ")
     println(accuracy)
+
+    logisticRegressionModel.save("logRegModel")
 
   }
 }
