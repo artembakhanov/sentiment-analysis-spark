@@ -8,30 +8,34 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 object TrainClassifier {
 
   // function for training Logistic Regression
-  def train_logReg(df_train: DataFrame): CrossValidatorModel = {
+  def train_logReg(df_train: DataFrame) = {
     // init
     val logisticRegression = new LogisticRegression()
+      .setElasticNetParam(0.5)
+      .setFitIntercept(true)
+      .setMaxIter(1000)
+      .setRegParam(0)
+      .setThreshold(0.5)
+
+    // train
+    val logisticRegressionModel = logisticRegression.fit(df_train)
+
+    // save
+    logisticRegressionModel.save("logRegModel")
+
+    logisticRegressionModel
+
+    // Note: Below is the grid search from which the best parameters were achieved
 
     // grid search
     // https://spark.apache.org/docs/latest/api/scala/org/apache/spark/ml/classification/LogisticRegression.html
-    /*
-    // Hard version
-    val paramGrid = new ParamGridBuilder()
-      .addGrid(logisticRegression.elasticNetParam, Array(0, 0.3, 0.6, 0.8, 0.9, 0.95, 1))
-      .addGrid(logisticRegression.fitIntercept, Array(true, false))
-      .addGrid(logisticRegression.maxIter, Array(1000, 5000, 10000))
-      .addGrid(logisticRegression.regParam, Array(0, 0.1, 0.3, 0.5, 1))
-      .addGrid(logisticRegression.threshold, Array(0.3, 0.5, 0.7))
-      .build()*/
-
-    // Light Version
-    val paramGrid = new ParamGridBuilder()
+    /*val paramGrid = new ParamGridBuilder()
       .addGrid(logisticRegression.elasticNetParam, Array(0, 0.5, 0.8, 1))
       .addGrid(logisticRegression.fitIntercept, Array(true, false))
       .addGrid(logisticRegression.maxIter, Array(1000))
       .addGrid(logisticRegression.regParam, Array(0, 0.1, 0.2))
       .addGrid(logisticRegression.threshold, Array(0.5))
-      .build()
+      .build()*/
 
     /*
       Best Params:
@@ -54,7 +58,7 @@ object TrainClassifier {
       Accuracy: 0.753
     */
 
-    // cross validation
+    /*// cross validation
     val crossval = new CrossValidator()
       .setEstimator(logisticRegression)
       .setEvaluator(new BinaryClassificationEvaluator)
@@ -68,30 +72,35 @@ object TrainClassifier {
 
     cvModel.save("logRegModel")
 
-    cvModel
-    /*// train
-    val logisticRegressionModel = logisticRegression.fit(df_train)
-
-    // save
-    logisticRegressionModel.save("logRegModel")
-
-    logisticRegressionModel*/
+    cvModel*/
   }
 
   // function for training Random Forest
-  def train_RandForest(df_train: DataFrame): CrossValidatorModel = {
+  def train_RandForest(df_train: DataFrame) = {
     //init
     val randomForestClassifier = new RandomForestClassifier()
+      .setMaxDepth(7)
+      .setNumTrees(40)
+
+    //train
+    val randomForestClassificationModel = randomForestClassifier.fit(df_train)
+
+    randomForestClassificationModel.save("randomForestModel")
+
+    randomForestClassificationModel
+
+    // Note: Below is the grid search from which the best parameters were achieved
 
     // grid search
     // https://spark.apache.org/docs/latest/api/scala/org/apache/spark/ml/classification/RandomForestClassifier.html
-    val paramGrid = new ParamGridBuilder()
+    /*val paramGrid = new ParamGridBuilder()
       .addGrid(randomForestClassifier.impurity, Array("entropy", "gini"))
       .addGrid(randomForestClassifier.maxDepth, Array(3, 5, 7))
       .addGrid(randomForestClassifier.numTrees, Array(20, 40))
-      .build()
+      .build()*/
 
     /*
+      Best Params:
       {
         rfc_ba215569256d-bootstrap: true,
         rfc_ba215569256d-cacheNodeIds: false,
@@ -118,7 +127,7 @@ object TrainClassifier {
     */
 
     // cross validation
-    val crossval = new CrossValidator()
+    /*val crossval = new CrossValidator()
       .setEstimator(randomForestClassifier)
       .setEvaluator(new BinaryClassificationEvaluator)
       .setEstimatorParamMaps(paramGrid)
@@ -132,14 +141,7 @@ object TrainClassifier {
 
     cvModel.save("randomForestModel")
 
-    cvModel
-
-    /*//train
-    val randomForestClassificationModel = randomForestClassifier.fit(df_train)
-
-    randomForestClassificationModel.save("randomForestGridModel")
-
-    randomForestClassificationModel*/
+    cvModel*/
   }
 
   def main(args: Array[String]): Unit = {
@@ -182,14 +184,6 @@ object TrainClassifier {
     // printing the results
     println("Logistic Regression")
     predictions1.show(20, true)
-
-    // Extract the summary from the returned LogisticRegressionModel
-    /*val trainingSummary1 = logisticRegressionModel.binarySummary
-    println("History:")
-    // Obtain the objective per iteration.
-    val objectiveHistory1 = trainingSummary1.objectiveHistory
-    println("objectiveHistory:")
-    objectiveHistory1.foreach(loss => println(loss))*/
 
     // evaluating the model
     val evaluator1 = new BinaryClassificationEvaluator()
