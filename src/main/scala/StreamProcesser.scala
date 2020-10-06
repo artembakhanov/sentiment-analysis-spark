@@ -4,9 +4,17 @@ import org.apache.spark.sql.{Row, SQLContext, SaveMode, SparkSession}
 import org.apache.spark.streaming.{Seconds, StreamingContext, Time}
 import org.apache.spark.{SparkConf, SparkContext}
 
+import scala.concurrent.duration.Duration
 
 object StreamProcesser {
   def main(args: Array[String]): Unit = {
+
+    var taskDuration = 120 * 1000L // 2 minutes
+    if (args.length > 0) {
+      taskDuration = Duration(args(0)).toMillis
+    }
+
+
     val conf = new SparkConf().setAppName("Streaming")
     val sc = new SparkContext(conf)
 
@@ -35,7 +43,7 @@ object StreamProcesser {
       }
     )
     ssc.start()
-    ssc.awaitTerminationOrTimeout(120 * 1000)
+    ssc.awaitTerminationOrTimeout(taskDuration)
     ssc.stop()
   }
 }
