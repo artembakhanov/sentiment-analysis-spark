@@ -1,14 +1,11 @@
-import java.util.StringTokenizer
-
-import org.apache.log4j.{Level, Logger}
 import org.apache.spark.ml.feature.{RegexTokenizer, StopWordsRemover, Word2VecModel}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.regexp_replace
 import org.apache.spark.sql.types.FloatType
-import org.apache.spark.{SparkConf, SparkContext}
 
-class Preprocessing(spark: SparkSession) {
+class Preprocessing(spark: SparkSession, vec_size: Int, min_count: Int) {
 
+  // reducing 3 or more repeating symbols to 2
   def reduc_repit_symb = (text: String) => {
 
     val reg = "(\\w)\\1+".r
@@ -21,6 +18,7 @@ class Preprocessing(spark: SparkSession) {
     res
   }
 
+  // preprocessing for both train and test data
   def prep(dataFrame: DataFrame): DataFrame = {
 
     val no_repited_symb = spark.udf.register("no_repited_symb", reduc_repit_symb)
@@ -55,6 +53,7 @@ class Preprocessing(spark: SparkSession) {
     df
   }
 
+  // preprocessing for testing data
   def prep_test(df_test: DataFrame): DataFrame = {
 
     var df = prep(df_test)
@@ -76,11 +75,12 @@ class Preprocessing(spark: SparkSession) {
     df
   }
 
+  // preprocessing for training data
   def prep_train(df_train: DataFrame): DataFrame = {
 
     var df = prep(df_train)
 
-    val word2VecModel = new TrainWord2Vec(df, 25, 15).word2VecModel
+    val word2VecModel = new TrainWord2Vec(df, vec_size, min_count).word2VecModel
 
     df = word2VecModel.transform(df)
 
