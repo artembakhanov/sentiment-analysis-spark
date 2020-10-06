@@ -62,7 +62,7 @@ class Preprocessing(spark: SparkSession, vec_size: Int, min_count: Int) {
 
     df = word2VecModel.transform(df)
 
-    df = df.drop("Text", "Tokens", "Filtered")
+    df = df.drop("Tokens", "Filtered")
 
     df = df.withColumnRenamed("Sentiment", "label")
     df = df.withColumnRenamed("Vec", "features")
