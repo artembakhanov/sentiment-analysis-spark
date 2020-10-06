@@ -66,7 +66,7 @@ object TrainClassifier {
     println("Logistic Regression - Best Params")
     println(cvModel.bestModel.extractParamMap())
 
-    cvModel.save("logRegGridModel")
+    cvModel.save("logRegModel")
 
     cvModel
     /*// train
@@ -130,7 +130,7 @@ object TrainClassifier {
     println("Random Forest - Best Params")
     println(cvModel.bestModel.extractParamMap())
 
-    cvModel.save("randomForestGridModel")
+    cvModel.save("randomForestModel")
 
     cvModel
 
