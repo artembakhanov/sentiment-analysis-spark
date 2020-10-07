@@ -1,9 +1,33 @@
-import org.apache.spark.ml.classification.{LogisticRegression, RandomForestClassifier}
+import org.apache.spark.ml.Estimator
+import org.apache.spark.ml.classification.{Classifier, LinearSVC, LinearSVCModel, LogisticRegression, RandomForestClassifier}
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
 import org.apache.spark.ml.tuning.{CrossValidator, ParamGridBuilder}
+import org.apache.spark.mllib.classification.SVMModel
 import org.apache.spark.sql.DataFrame
+import org.apache.spark.ml.linalg.Vector
+import org.apache.spark.ml.param.ParamMap
 
 class Classifiers {
+
+  def crossValidator(classifier: Classifier[_, _, _], paramGrid: Array[ParamMap], numFolds: Int = 5): CrossValidator = {
+    val crossval = new CrossValidator()
+      .setEstimator(classifier)
+      .setEvaluator(new BinaryClassificationEvaluator)
+      .setEstimatorParamMaps(paramGrid)
+      .setNumFolds(numFolds)
+
+    crossval
+  }
+
+  def trainSaveClassifier(crossValidator: CrossValidator, df_train: DataFrame, modelName: String, saveTo: String) = {
+    val cvModel = crossValidator.fit(df_train)
+
+    println(f"$modelName%s - Best Params")
+    println(cvModel.bestModel.extractParamMap())
+    cvModel.save(saveTo)
+
+    cvModel
+  }
 
   def logisticRegression(df_train: DataFrame) = {
     val logisticRegression = new LogisticRegression()
@@ -40,20 +64,8 @@ class Classifiers {
     */
 
     // cross validation
-    val crossval = new CrossValidator()
-      .setEstimator(logisticRegression)
-      .setEvaluator(new BinaryClassificationEvaluator)
-      .setEstimatorParamMaps(paramGrid)
-      .setNumFolds(5)
-
-    val cvModel = crossval.fit(df_train)
-
-    println("Logistic Regression - Best Params")
-    println(cvModel.bestModel.extractParamMap())
-
-    cvModel.save("logRegModel")
-
-    cvModel
+    val crossval = crossValidator(logisticRegression, paramGrid, 5)
+    trainSaveClassifier(crossval, df_train, "Logistic Regression", "logRegModel")
   }
 
   def randomForest(df_train: DataFrame) = {
@@ -95,20 +107,24 @@ class Classifiers {
     */
 
     // cross validation
-    val crossval = new CrossValidator()
-      .setEstimator(randomForestClassifier)
-      .setEvaluator(new BinaryClassificationEvaluator)
-      .setEstimatorParamMaps(paramGrid)
-      .setNumFolds(5)
+    val crossval = crossValidator(randomForestClassifier, paramGrid, 5)
+    trainSaveClassifier(crossval, df_train, "Random Forest", "randomForestModel")
+  }
 
-    val cvModel = crossval.fit(df_train)
 
-    println("Random Forest - Best Params")
-    println(cvModel.bestModel.extractParamMap())
+  def svc(df_train: DataFrame): Unit = {
+    val svcModel = new LinearSVC()
 
-    cvModel.save("randomForestModel")
+    val paramGrid = new ParamGridBuilder()
+      .addGrid(svcModel.aggregationDepth, Array(2, 3))
+      .addGrid(svcModel.maxIter, Array(100, 150))
+      .addGrid(svcModel.threshold, Array(0.4, 0.5, 0.6))
+      .addGrid(svcModel.regParam, Array(0, 0.1, 0.2))
+      .build()
 
-    cvModel
+
+    val crossval = crossValidator(svcModel, paramGrid, 5)
+    trainSaveClassifier(crossval, df_train, "Linear SVC", "svcModel")
   }
 
 }
