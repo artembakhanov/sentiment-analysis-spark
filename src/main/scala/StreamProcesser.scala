@@ -63,6 +63,7 @@ object StreamProcesser {
             predictions
               .withColumn("Timestamp", current_timestamp())
               .select("Timestamp", "OriginalText", "prediction")
+              .coalesce(1)
               .write.mode(SaveMode.Append).csv(f"stream/$name%s/")
           }
         }
