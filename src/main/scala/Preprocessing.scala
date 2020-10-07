@@ -67,7 +67,7 @@ class Preprocessing(sc: SparkContext, spark: SparkSession, vec_size: Int, min_co
     var df = prep(df_test)
 
     // loading word2Vec
-    val word2VecModel = Word2VecModel.load("word2VecModelTEST")
+    val word2VecModel = Word2VecModel.load("word2VecModel")
 
     df = word2VecModel.transform(df)
 
@@ -97,8 +97,8 @@ class Preprocessing(sc: SparkContext, spark: SparkSession, vec_size: Int, min_co
     val conf = sc.hadoopConfiguration
     val fs = FileSystem.get(conf)
 
-    val word2VecModel = if (fs.exists(new Path("word2VecModelTEST")))
-      Word2VecModel.load("word2VecModelTEST")
+    val word2VecModel = if (fs.exists(new Path("word2VecModel")))
+      Word2VecModel.load("word2VecModel")
     else new TrainWord2Vec(df, vec_size, min_count).word2VecModel
 
     df = word2VecModel.transform(df)

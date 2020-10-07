@@ -41,7 +41,7 @@ object TrainClassifier {
     val randomForestClassificationModel = randomForestClassifier.fit(df_train)
 
     // save
-    randomForestClassificationModel.save("randomForestModelTEST")
+    randomForestClassificationModel.save("randomForestModel")
 
     randomForestClassificationModel
   }
