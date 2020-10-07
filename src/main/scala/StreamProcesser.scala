@@ -1,4 +1,5 @@
-import org.apache.spark.ml.classification.LogisticRegressionModel
+import org.apache.spark.ml.classification.{LinearSVCModel, LogisticRegressionModel, RandomForestClassificationModel}
+import org.apache.spark.mllib.tree.model.RandomForestModel
 import org.apache.spark.sql.functions.current_timestamp
 import org.apache.spark.sql.types.{DateType, IntegerType, StringType, StructField, StructType, TimestampType}
 import org.apache.spark.sql.{Row, SQLContext, SaveMode, SparkSession}
@@ -26,6 +27,9 @@ object StreamProcesser {
     val ds = ssc.socketTextStream("10.90.138.32", 8989)
 
     val logisticRegressionModel = LogisticRegressionModel.load("logRegModel")
+    val randomForestModel = RandomForestClassificationModel.load("randomForestModel")
+    val linearSVCModel = LinearSVCModel.load("logRegModel")
+    val models = Array((logisticRegressionModel, "logRegModel"), (randomForestModel, "randomForestModel"), (linearSVCModel, "logRegModel"))
     val schema = new StructType()
       .add(StructField("Sentiment", IntegerType, true))
       .add(StructField("Text", StringType, false))
@@ -39,11 +43,14 @@ object StreamProcesser {
           val preprocessing = new Preprocessing(spark, 20, 20)
           val df_test = preprocessing.prep_test(stream)
 
-          val predictions = logisticRegressionModel.transform(df_test)
-          predictions
-            .withColumn("Timestamp", current_timestamp())
-            .select("Timestamp", "OriginalText", "prediction")
-            .write.mode(SaveMode.Append).csv("stream/")
+
+          for ((model, name) <- models) {
+            val predictions = logisticRegressionModel.transform(df_test)
+            predictions
+              .withColumn("Timestamp", current_timestamp())
+              .select("Timestamp", "OriginalText", "prediction")
+              .write.mode(SaveMode.Append).csv(f"stream/$name%s/")
+          }
         }
       }
     )
