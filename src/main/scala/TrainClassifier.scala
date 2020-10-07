@@ -23,7 +23,7 @@ object TrainClassifier {
     val logisticRegressionModel = logisticRegression.fit(df_train)
 
     // save
-    logisticRegressionModel.save("logRegModelTEST")
+    logisticRegressionModel.save("logRegModel")
 
     logisticRegressionModel
   }
@@ -87,7 +87,7 @@ object TrainClassifier {
       .load("/user/tesem/test_data.csv")
 
     // preprocessing the data
-    val preprocessing = new Preprocessing(spark, vec_size = 25, min_count = 15)
+    val preprocessing = new Preprocessing(sc, spark, vec_size = 25, min_count = 15)
     df_train = preprocessing.prep_train(df_train)
     df_test = preprocessing.prep_test(df_test)
 

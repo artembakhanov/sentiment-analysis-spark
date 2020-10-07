@@ -1,9 +1,11 @@
+import org.apache.spark.SparkContext
 import org.apache.spark.ml.feature.{RegexTokenizer, StopWordsRemover, Word2VecModel}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 import org.apache.spark.sql.functions.regexp_replace
-import org.apache.spark.sql.types.{DoubleType, FloatType}
+import org.apache.spark.sql.types.DoubleType
+import org.apache.hadoop.fs.{FileSystem, Path}
 
-class Preprocessing(spark: SparkSession, vec_size: Int, min_count: Int) {
+class Preprocessing(sc: SparkContext, spark: SparkSession, vec_size: Int, min_count: Int) {
 
   // reducing 3 or more repeating symbols to 2
   def reduc_repit_symb = (text: String) => {
@@ -91,7 +93,13 @@ class Preprocessing(spark: SparkSession, vec_size: Int, min_count: Int) {
     var df = prep(df_train)
 
     // training word2vec on our train dataset
-    val word2VecModel = new TrainWord2Vec(df, vec_size, min_count).word2VecModel
+
+    val conf = sc.hadoopConfiguration
+    val fs = FileSystem.get(conf)
+
+    val word2VecModel = if (fs.exists(new Path("word2VecModelTEST")))
+      Word2VecModel.load("word2VecModelTEST")
+    else new TrainWord2Vec(df, vec_size, min_count).word2VecModel
 
     df = word2VecModel.transform(df)
 

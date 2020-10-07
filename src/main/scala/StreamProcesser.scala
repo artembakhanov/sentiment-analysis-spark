@@ -36,6 +36,7 @@ object StreamProcesser {
     if (args.contains("svc"))
       models :+ (LinearSVCModel.load("svcModel"), "svcModel")
 //    val models = Array((LogisticRegressionModel.load("logRegModel"), "logRegModel"), (RandomForestClassificationModel.load("randomForestModel"), "randomForestModel"), (LinearSVCModel.load("svcModel"), "svcModel"))
+
     val schema = new StructType()
       .add(StructField("Sentiment", IntegerType, true))
       .add(StructField("Text", StringType, false))
@@ -46,7 +47,7 @@ object StreamProcesser {
         val stream = spark.createDataFrame(tweet.map(attributes => Row(1, attributes, attributes)), schema)
 
         if (!stream.isEmpty) {
-          val preprocessing = new Preprocessing(spark, 20, 20)
+          val preprocessing = new Preprocessing(sc, spark, 20, 20)
           val df_test = preprocessing.prep_test(stream)
 
           for ((model, name) <- models) {
