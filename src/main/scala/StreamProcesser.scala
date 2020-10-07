@@ -1,3 +1,5 @@
+import java.security.MessageDigest
+
 import org.apache.spark.ml.classification.{ClassificationModel, LinearSVCModel, LogisticRegressionModel, RandomForestClassificationModel}
 import org.apache.spark.ml.util.MLReadable
 import org.apache.spark.mllib.tree.model.RandomForestModel
@@ -72,5 +74,15 @@ object StreamProcesser {
     ssc.start()
     ssc.awaitTerminationOrTimeout(taskDuration)
     ssc.stop()
+
+    val spark2 = SparkSession
+      .builder()
+      .config(conf)
+      .getOrCreate()
+
+    spark2.read.csv("stream/logRegModel/").coalesce(1).write.csv("stream_final/logRegModel/")
+    spark2.read.csv("stream/randomForestModel").coalesce(1).write.csv("stream_final/randomForestModel/")
+    spark2.read.csv("stream/svcModel").coalesce(1).write.csv("stream_final/svcModel/")
+
   }
 }
