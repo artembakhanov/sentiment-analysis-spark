@@ -29,7 +29,7 @@ object StreamProcesser {
     val logisticRegressionModel = LogisticRegressionModel.load("logRegModel")
     val randomForestModel = RandomForestClassificationModel.load("randomForestModel")
     val linearSVCModel = LinearSVCModel.load("logRegModel")
-    val models = Array((logisticRegressionModel, "logRegModel"), (randomForestModel, "randomForestModel"), (linearSVCModel, "logRegModel"))
+    val models = Array((logisticRegressionModel, "logRegModel"), (randomForestModel, "randomForestModel"), (linearSVCModel, "svcModel"))
     val schema = new StructType()
       .add(StructField("Sentiment", IntegerType, true))
       .add(StructField("Text", StringType, false))
