@@ -24,7 +24,7 @@ object StreamProcesser {
     val sc = new SparkContext(conf)
 
     val spark = SparkSession.builder().appName("Streaming").config(sc.getConf).getOrCreate()
-    val ssc = new StreamingContext(sc, Seconds(2))
+    val ssc = new StreamingContext(sc, Seconds(60))
 
     val ds = ssc.socketTextStream("10.90.138.32", 8989)
 
