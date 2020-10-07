@@ -1,10 +1,8 @@
 import org.apache.log4j.{Level, Logger}
-import org.apache.spark.ml.classification.{LogisticRegression, LogisticRegressionModel, RandomForestClassificationModel, RandomForestClassifier}
+import org.apache.spark.ml.classification.{LogisticRegression, RandomForestClassifier}
 import org.apache.spark.ml.evaluation.BinaryClassificationEvaluator
-import org.apache.spark.ml.tuning.{CrossValidator, CrossValidatorModel, ParamGridBuilder}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.{DataFrame, SparkSession, SQLContext}
-import org.apache.spark.ml.linalg.DenseVector
 import org.apache.spark.ml.linalg.Vector
 import org.apache.spark.mllib.evaluation.BinaryClassificationMetrics
 
@@ -25,7 +23,7 @@ object TrainClassifier {
     val logisticRegressionModel = logisticRegression.fit(df_train)
 
     // save
-    logisticRegressionModel.save("logRegModel")
+    logisticRegressionModel.save("logRegModelTEST")
 
     logisticRegressionModel
   }
@@ -42,26 +40,27 @@ object TrainClassifier {
     val randomForestClassificationModel = randomForestClassifier.fit(df_train)
 
     // save
-    randomForestClassificationModel.save("randomForestModel")
+    randomForestClassificationModel.save("randomForestModelTEST")
 
     randomForestClassificationModel
   }
 
+  // function for calculating f1 score
   def calc_f1Score(sc: SparkContext, predictions: DataFrame): Tuple2[Double, Double] = {
     val sqlContext= new SQLContext(sc)
     import sqlContext.implicits._
 
-    val preds = predictions.map(x => (x.getAs[Vector]("probability")(1), x.getAs[Double]("label"))).rdd
+    // rdd storing tuples in the form of (probability, label)
+    val predictionsAndLabels = predictions.map(x => (x.getAs[Vector]("probability")(1), x.getAs[Double]("label"))).rdd
 
-    val metrics = new BinaryClassificationMetrics(preds)
+    val metrics = new BinaryClassificationMetrics(predictionsAndLabels)
 
+    // calculating f1 score
     val f1Score = metrics.fMeasureByThreshold
-      .map(row => ((math rint row._1 * 100) / 100, row._2))
-      .filter(row => row._1 > 0.0)
-      .reduceByKey((row1, row2) => (row1 + row2) / 2.0)
       .collect()
 
-    f1Score.maxBy(_._2) //threshold and f1 score
+    // taking max value of f1 score
+    f1Score.maxBy(_._2) //Tuple2(threshold, f1 score)
   }
 
 

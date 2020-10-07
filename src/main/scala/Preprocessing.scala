@@ -8,11 +8,13 @@ class Preprocessing(spark: SparkSession, vec_size: Int, min_count: Int) {
   // reducing 3 or more repeating symbols to 2
   def reduc_repit_symb = (text: String) => {
 
+    // regex acquire symbols that repeat several times
     val reg = "(\\w)\\1+".r
     var res = text
+    // going though each found pattern
     for(m <- reg.findAllIn(res)) {
-      if (m.length > 2) {
-        res = res.replaceAll(m, s"${m(0)}${m(0)}")
+      if (m.length > 2) { // acquiring those which have length greater than 2
+        res = res.replaceAll(m, s"${m(0)}${m(0)}") // replacing
       }
     }
     res
@@ -25,8 +27,11 @@ class Preprocessing(spark: SparkSession, vec_size: Int, min_count: Int) {
     var df = dataFrame
     // removing usernames and hastags
     df = df.withColumn("Text", regexp_replace(df.col("Text"), "(#|@)\\w+", " "))
+    // removing links
     df = df.withColumn("Text", regexp_replace(df.col("Text"), "http[^\\s]+", " "))
+    // removing tags
     df = df.withColumn("Text", regexp_replace(df.col("Text"), "<.*>", " "))
+    // removing repeated symbols
     df = df.withColumn("Text", no_repited_symb(df.col("Text")))
 
     // defining tokenizer
@@ -39,7 +44,7 @@ class Preprocessing(spark: SparkSession, vec_size: Int, min_count: Int) {
     // tokenizing the text
     val tokenized = regexTokenizer.transform(df)
 
-    // against not no
+    // excluding all stopwords, except {against, not, no}
     val stopwords = StopWordsRemover.loadDefaultStopWords("english")
       .filter(!Array("against", "no", "not").contains(_))
 
@@ -48,6 +53,7 @@ class Preprocessing(spark: SparkSession, vec_size: Int, min_count: Int) {
       .setOutputCol("Filtered")
       .setStopWords(stopwords)
 
+    // removing stopwords
     df = stopWordsRemover.transform(tokenized)
 
     df
@@ -58,18 +64,22 @@ class Preprocessing(spark: SparkSession, vec_size: Int, min_count: Int) {
 
     var df = prep(df_test)
 
-    val word2VecModel = Word2VecModel.load("word2VecModel")
+    // loading word2Vec
+    val word2VecModel = Word2VecModel.load("word2VecModelTEST")
 
     df = word2VecModel.transform(df)
 
+    // dropping unneeded columns
     df = df.drop("Tokens", "Filtered")
 
+    // renaming columns
     df = df.withColumnRenamed("Sentiment", "label")
     df = df.withColumnRenamed("Vec", "features")
     df = df.withColumn("labeltmp", df.col("label").cast(DoubleType))
       .drop("label")
       .withColumnRenamed("labeltmp", "label")
 
+    // dropping column with id
     df = df.drop("_c0")
 
     df
@@ -80,18 +90,22 @@ class Preprocessing(spark: SparkSession, vec_size: Int, min_count: Int) {
 
     var df = prep(df_train)
 
+    // training word2vec on our train dataset
     val word2VecModel = new TrainWord2Vec(df, vec_size, min_count).word2VecModel
 
     df = word2VecModel.transform(df)
 
+    // dropping unneeded columns
     df = df.drop("Text", "Tokens", "Filtered")
 
+    // dropping unneeded columns
     df = df.withColumnRenamed("Sentiment", "label")
     df = df.withColumnRenamed("Vec", "features")
     df = df.withColumn("labeltmp", df.col("label").cast(DoubleType))
       .drop("label")
       .withColumnRenamed("labeltmp", "label")
 
+    // dropping column with id
     df = df.drop("_c0")
 
     df
