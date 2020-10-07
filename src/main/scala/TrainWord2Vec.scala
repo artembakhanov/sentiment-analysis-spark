@@ -15,5 +15,5 @@ class TrainWord2Vec(df_train: DataFrame, vec_size: Int, min_count: Int) {
   val word2VecModel = word2Vec.fit(df_train)
 
   // saving the model to hdfs for future use
-  word2VecModel.save("word2VecModelTEST")
+  word2VecModel.save("word2VecModel")
 }

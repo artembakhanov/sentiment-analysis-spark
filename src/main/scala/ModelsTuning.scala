@@ -44,7 +44,7 @@ object ModelsTuning {
       .load("/user/tesem/train_data.csv")
 
     // preprocessing the data
-    val preprocessing = new Preprocessing(spark, vec_size = 25, min_count = 15)
+    val preprocessing = new Preprocessing(sc, spark, vec_size = 25, min_count = 15)
     df_train = preprocessing.prep_train(df_train)
 
     tuneModel(args(0), df_train)
