@@ -28,14 +28,21 @@ object StreamProcesser {
 
     val ds = ssc.socketTextStream("10.90.138.32", 8989)
 
-    val models = Array[(ClassificationModel[_, _], String)]()
-    if (args.contains("logreg"))
-      models :+ (LogisticRegressionModel.load("logRegModel"), "logRegModel")
-    if (args.contains("randforest"))
-      models :+ (RandomForestClassificationModel.load("randomForestModel"), "randomForestModel")
-    if (args.contains("svc"))
-      models :+ (LinearSVCModel.load("svcModel"), "svcModel")
-//    val models = Array((LogisticRegressionModel.load("logRegModel"), "logRegModel"), (RandomForestClassificationModel.load("randomForestModel"), "randomForestModel"), (LinearSVCModel.load("svcModel"), "svcModel"))
+    var models = Array[(ClassificationModel[_, _], String)]()
+    if (args.contains("logreg")) {
+      models = models :+ (LogisticRegressionModel.load("logRegModel"), "logRegModel")
+      println("Adding logRegModel")
+    }
+    if (args.contains("randforest")) {
+      models = models :+ (RandomForestClassificationModel.load("randomForestModel"), "randomForestModel")
+      println("Adding randomForestModel")
+    }
+
+    if (args.contains("svc")) {
+      models = models :+ (LinearSVCModel.load("svcModel"), "svcModel")
+      println("Adding svcModel")
+    }
+    //    val models = Array((LogisticRegressionModel.load("logRegModel"), "logRegModel"), (RandomForestClassificationModel.load("randomForestModel"), "randomForestModel"), (LinearSVCModel.load("svcModel"), "svcModel"))
 
     val schema = new StructType()
       .add(StructField("Sentiment", IntegerType, true))
@@ -52,6 +59,7 @@ object StreamProcesser {
 
           for ((model, name) <- models) {
             val predictions = model.transform(df_test)
+            println(name)
             predictions
               .withColumn("Timestamp", current_timestamp())
               .select("Timestamp", "OriginalText", "prediction")
