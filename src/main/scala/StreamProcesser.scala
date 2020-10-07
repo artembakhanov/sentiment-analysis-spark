@@ -80,9 +80,8 @@ object StreamProcesser {
       .config(conf)
       .getOrCreate()
 
-    spark2.read.csv("stream/logRegModel/").coalesce(1).write.csv("stream_final/logRegModel/")
-    spark2.read.csv("stream/randomForestModel").coalesce(1).write.csv("stream_final/randomForestModel/")
-    spark2.read.csv("stream/svcModel").coalesce(1).write.csv("stream_final/svcModel/")
-
+    for ((_, name) <- models) {
+      spark2.read.csv(f"stream/$name%s/").coalesce(1).write.csv(f"stream_final/$name%s/")
+    }
   }
 }
