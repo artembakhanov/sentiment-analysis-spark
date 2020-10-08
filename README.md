@@ -189,16 +189,20 @@ And its content is:
 
 
 ## What can be Improved
-1. We can try to use pretrained word2vec model. Our model is trained on a very small text corpus and can be biased since we used only twitter and reviews datasets.
-2. We can improve accuracy of the classifier by using advanced deep learning models (e.g. LSTM) but unfortunately we did not have enough resources on the cluster
-3. Also we can create better visualisation for the stream, for example create a web dashboard where all new tweets will appear and some aggregated statestics will be shown
+1. Applying pretrained word2vec model. Our model is trained on a very small text corpus and can be biased since only twitter and reviews datasets were used.
+2. Improving accuracy of the classifier by using advanced deep learning models (e.g. LSTM).
+3. Better visualisation for the stream, for example create a web dashboard where all new tweets will appear and some aggregated statestics will be shown.
+4. Apply stemming or lemmatization in preprocessing step. 
+5. Better structure of the code.
 
 TODO
 ## Testing and Comparing models on Stream
-`stream_final/logRegModel`, `stream_final/randomForestModel`, `stream_final/svcModel` folders where downloaded to our local machines. After that, we put correct lables by our hands. TODO
+`stream_final/logRegModel`, `stream_final/randomForestModel`, `stream_final/svcModel` folders where downloaded to our local machines. 
+After that, we put correct lables by our hands and calculated `precision`, `recall` and `f1 score` using the code in `test_scripts.`
 
+TODO
 ## Conclusion  
-todo
+TODO
 
 ## References
 
