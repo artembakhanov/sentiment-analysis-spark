@@ -178,6 +178,7 @@ Performed steps:
     4. Preprocess it by calling prep_test(stream) function that was mentioned in Preprocessing section
     5. For each model, send the preprocced data and acquire predictions.
     6. Add column with current timestamp and save to csv.
+    7. Repeat from step 2 until finish.
 
 For each model, results are stored in `stream/modelname/part-r-...`
 
