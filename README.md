@@ -64,6 +64,9 @@ The preprocessing consists of several part:
 
 As it was mentioned before, we have already split the data into train and test samples, so we do not have to do it here.
 
+
+Training dataset is preproccessed by calling `prep_train(df_train)` and testing dataset is preproccessed by calling `prep_test(df_test)`. Steps are almost the same except the ones related to `word2vec`.
+
 `Word2Vec` is trained on our training dataset when preprocessing it. After that, `word2vec` is saved to hdfs. When preprocessing test and stream datasets we just load the trained `word2vec` and use it. Also, we wanted to try preptrained `word2vec` but each time ran out of memory. Thus, we gave up that idea.
 
 ```
@@ -140,15 +143,50 @@ Do not delete folders/files
 - svcModel
 ```
 
-**4. Streaming**
 
-So, we have the classifiers trained and ready to predict sentiments. Now we collect the tweets from the stream and
-preprocess them as we did with the dataset. TODO
 
-**5. Classify Tweets**
+**4. Processing the Stream**
 
-Now, we have our classifiers trained and tweets preprocessed. The only thing remaining is to predict the sentiment of
-these tweets and assess the quality of our models absolutely and relative to each other using metrics.
+`Stream Address: 10.90.138.32:8989`
+
+Performed steps:
+1. Load trained models from hdfs.
+2. Take the tweet(s) from stream
+3. Put them into new empty dataframe called stream.
+4. Preprocess it by calling prep_test(stream) function that was mentioned in section 2. Preprocessing
+5. For each model, send the preprocced data and acquire predictions.
+6. Add column with current timestamp and save to csv.
+
+For each model, results are stored in `stream/modelname/part-r-...`
+
+For example, the output of logistic regression model is stored in `stream/logRegModel/part-r-...`
+
+Outputs are in the form of:
+```
+timestamp, twit, model prediction
+```
+
+Example of the output:
+```
+2020-10-08T09:59:04.199+03:00,@brendonuriesays helloooo brendon(: reply please,1.0
+```
+
+Results may be stored in several files. To make our lives a bit easier, at the end, we unite all the outputs to a single file for each model in `stream_final` folder.
+
+For example, for random forest model, the final file is as follows `stream_final/randomForestModel/part-r-00000...`
+
+And its content is:
+```
+2020-10-08T04:48:01.310+03:00,@breedimetria mannnn hell yea dat nigga be parkin lot pumpin.....I made a mistake &amp;saw a parkin lot scene in his phone one day! Kilt me,0.0
+2020-10-08T00:33:01.783+03:00,@DavidRozansky We had a VERY active BBS community here $ yrs. 100s of 'em. Even 1st national relay FIDO-Nets.  AOL killed BBSing.    LOSS!,0.0
+2020-10-08T02:06:01.352+03:00,@Davinche I know  Them times there having a phone that could save more than 10 messages was big so how was I 2 know it wud evolve so quick,0.0
+2020-10-08T04:46:00.968+03:00,@breedimetria @blackaricanma alright ladies! I'll be back to chat l8r. Bout to take care of Lil A bcuz he doesnt feel well  ttyl twitches!,0.0
+2020-10-08T07:20:01.351+03:00,@dawllyllama Sorry for the trauma - to u AND ur car  maybe coyote thought he was a super genius. But duh roadrunner always has last laugh.,0.0
+2020-10-08T04:29:01.256+03:00,@breckpetekaren Not a big winter fan. the reason im still here- love the heat (&amp; job)but missing my nephews grow up  Im torn and stuck,1.0
+2020-10-08T10:20:04.114+03:00,@BrennanAnnie - did a nice long stretch post easy spin and knee feeling good  only bummer is missing Britney tonight due to LDN transport!,1.0
+...
+```
+
 
 ## What can be Improved
 
