@@ -35,7 +35,7 @@ We divided the work into stages and created a pipeline that can be summarized as
 
 **1. Selecting data**
  
-We looked for labeled data on the internet, selected datasets that we thought would suit us the most, and merged
+We selected datasets from assignment description that we thought would suit us the most, and merged
 them together.
 Check out [references](#references) for the sources that we selected. Basically, we were looking for a pair
 (sentiment, sentence / paragraph / text) for our classification models.
