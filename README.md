@@ -54,7 +54,7 @@ The preprocessing consists of several part:
     1. Get rid of unimportant information such as tags (@elonmusk, #twitter), hyperlinks (https://google.com), 
     html tags (<br /><br />), and repeated symbols (amaaaazing).
     
-    2. Tokenization - split text into words
+    2. Tokenization - split text into words (lowercasing is done in this step as well)
     
     3. Remove "stopwords" - words that do not influence the sentiment of the text (they, to, be, because, that, etc.)
 
