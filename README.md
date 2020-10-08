@@ -178,6 +178,7 @@ Performed steps:
     4. Preprocess it by calling prep_test(stream) function that was mentioned in Preprocessing section
     5. For each model, send the preprocced data and acquire predictions.
     6. Add column with current timestamp and save to csv.
+    7. Repeat from step 2 until finish.
 
 For each model, results are stored in `stream/modelname/part-r-...`
 
@@ -252,6 +253,7 @@ You can find labeled stream files in `stream labeled` folder
 All in all, `random forest` did the best job obtaining the highest precision and its recall being only 0.02 points behind `SVM`.
 
 ## Conclusion  
+
 ## Code
 
 **To train the models**
