@@ -1,5 +1,7 @@
 # Assignment №2. Introduction to Big Data. Stream Processing with Spark
 
+GitHub [repository](https://github.com/artembakhanov/sentiment-analysis-spark)
+
 ## Contents
 
 * [Team Members and Roles](#team-members-and-roles)
@@ -15,6 +17,8 @@
 * [Conclusion](#conclusion)
 
 * [Code](#code)
+
+* [Output](#output)
 
 * [References](#references)
 
@@ -51,7 +55,7 @@ get customers' opinion about their products &mdash; and thus fix what's bad or u
 
 We divided the work into stages and created a pipeline that can be summarized as follows:
 
-![Pipeline](images/pipeline.jpg)
+![Pipeline](images/pipeline.jpg "Pipeline")
 
 **1. Selecting data**
  
@@ -284,6 +288,28 @@ This will create several folders containing records in the form of `timestamp, t
 ```
 
 If you want to run the code again, please, delete those folders and make sure that models created in training stage exist.
+
+## Output
+
+**Preprocessed features from training dataset**
+
+![Train Data](images/train_data.jpg "Preprocessed features from training dataset")
+
+**Text and its vector representation from testing dataset**
+
+![Test Data](images/test_data.jpg "Text and its vector representation from testing dataset")
+
+**Trained Logistic Regression**
+
+![Logistic Regression](images/logistic_regression.jpg)
+
+**Trained Random Forest**
+
+![Train Data](images/random_forest.jpg)
+
+**Trained SVC**
+
+![Train Data](images/svc.jpg)
 
 ## References
 
