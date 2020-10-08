@@ -220,6 +220,8 @@ Our model is trained on a very small text corpus and can be biased since only tw
 
 **2. Improving accuracy of the classifier by using advanced deep learning models (e.g. LSTM).**
 
+Unfortunately, we did not have enough resources on the cluster
+
 **3. Better visualisation for the stream**
 
 For example, create a web dashboard where all new tweets will appear, and some aggregated statistics will be shown.
@@ -233,17 +235,52 @@ We saw some libraries on the internet, but we could not install/configure them t
 TODO
 
 ## Testing and Comparing models on Stream
+`stream_final/logRegModel`, `stream_final/randomForestModel`, `stream_final/svcModel` folders were downloaded to our local machines. 
 
-`stream_final/logRegModel`, `stream_final/randomForestModel`, and `stream_final/svcModel` folders were downloaded to our local machines. 
 After that, we put correct lables by our hands and calculated `precision`, `recall` and `f1 score` using the code in `test_scripts.`
 
-TODO
+You can find labeled stream files in `stream labeled` folder
+
+| Model | Precision | Recall | F1|
+| :--- | :---: | :---: | :---: | 
+| `Logistic Regression` | 0.75 | 0.896 | 0.81 |
+| `Random Forest` | 0.82 | 0.92 | 0.88 |
+| `SVM Classifier` | 0.53 | 0.94 | 0.68 |
+
+All in all, `random forest` did the best job obtaining the highest precision and its recall being only 0.02 points behind `SVM`.
+
+
 
 ## Conclusion  
 
-TODO
 
 ## Code
+### To train the models, run
+```
+spark-submit --master yarn --class TrainClassifier sentiment-analysis-spark_2.12-3.0.1_1.0.jar
+```
+
+This will create several folders containing corresponding models
+```
+1. logRegModel 
+2. randomForestModel
+3. svcModel
+4. word2VecModel
+```
+
+If you want to run the code again, please, delete those folders.
+
+### To run the Stream Processing 
+```
+spark-submit --master yarn --class StreamProcesser sentiment-analysis-spark_2.12-3.0.1_1.0.jar "5 minutes" logreg randforest svc
+```
+This will create several folders containing records in the form of `timestamp, twit, model prediciton`
+```
+1. stream
+2. stream_final
+```
+
+If you want to run the code again, please, delete those folders and make sure that models created in training stage exist.
 
 ## References
 
