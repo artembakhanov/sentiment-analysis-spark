@@ -116,7 +116,7 @@ parameters for each model. For detailed description of the hyperparameters check
 | `threshold` | 0.4, 0.5, 0.6 | 0.6 |
 | `regParam` | 0, 0.1, 0.2 | 0 |
 
-We can assess the quality of our models using [F1 Score](https://en.wikipedia.org/wiki/F1_score). Below is the table with
+We can assess the quality of our models using [F1 Score](https://en.wikipedia.org/wiki/F1_score) on our testing dataset. Below is the table with
 models' F1 Score:
 
 | Classifier | F1 Score |
@@ -125,8 +125,20 @@ models' F1 Score:
 | Random Forest | 0.718 |
 | SVC | 0.586 |
 
+
+After training and testing on corresponding dataset, models are saved to hdfs, so they can be loaded and used while proccessing stream.
+
 The code for classifiers is situated in the `Classifiers.scala` (cross validation and grid search) and in the
 `TrainClassifier.scala` the best parameters have been set explicitly to save time.
+
+```
+IMPORTANT
+
+Do not delete folders/files
+- logRegModel
+- randomForestModel
+- svcModel
+```
 
 **4. Streaming**
 
