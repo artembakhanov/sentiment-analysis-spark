@@ -232,12 +232,14 @@ We saw some libraries on the internet, but we could not install/configure them t
 
 **5. Better structure of the code.**
 
-TODO
+As we have been working with Scala for less than a month, it is impossible to be familiar with all syntactic capabilities
+that Scala has.
 
 ## Testing and Comparing models on Stream
+
 `stream_final/logRegModel`, `stream_final/randomForestModel`, `stream_final/svcModel` folders were downloaded to our local machines. 
 
-After that, we put correct lables by our hands and calculated `precision`, `recall` and `f1 score` using the code in `test_scripts.`
+After that, we put correct labels by our hands and calculated `precision`, `recall` and `f1 score` using the code in `test_scripts.`
 
 You can find labeled stream files in `stream labeled` folder
 
@@ -249,32 +251,33 @@ You can find labeled stream files in `stream labeled` folder
 
 All in all, `random forest` did the best job obtaining the highest precision and its recall being only 0.02 points behind `SVM`.
 
-
-
 ## Conclusion  
 
-
 ## Code
-### To train the models, run
+
+**To train the models, run**
+
 ```
 spark-submit --master yarn --class TrainClassifier sentiment-analysis-spark_2.12-3.0.1_1.0.jar
 ```
 
 This will create several folders containing corresponding models
-```
-1. logRegModel 
-2. randomForestModel
-3. svcModel
-4. word2VecModel
-```
+
+    1. logRegModel 
+    2. randomForestModel
+    3. svcModel
+    4. word2VecModel
 
 If you want to run the code again, please, delete those folders.
 
-### To run the Stream Processing 
+**To run the Stream Processing** 
+
 ```
 spark-submit --master yarn --class StreamProcesser sentiment-analysis-spark_2.12-3.0.1_1.0.jar "5 minutes" logreg randforest svc
 ```
+
 This will create several folders containing records in the form of `timestamp, twit, model prediciton`
+
 ```
 1. stream
 2. stream_final
@@ -289,7 +292,7 @@ If you want to run the code again, please, delete those folders and make sure th
 * Labeled datasets:
     * [Large Movie Review Dataset](http://ai.stanford.edu/~amaas/data/sentiment/) &mdash; binary classified sentiment
     dataset that contains a total of 50000 movie reviews;
-    * [UCI Sentiment Labelled Senteces](https://archive.ics.uci.edu/ml/datasets/Sentiment+Labelled+Sentences) &mdash;
+    * [UCI Sentiment Labelled Sentences](https://archive.ics.uci.edu/ml/datasets/Sentiment+Labelled+Sentences) &mdash;
     binary classified reviews from [imbd.com](https://imbd.com), [amazon.com](https://amazon.com), and [yelp.com](https://yelp.com);
     * [Twitter Sentiment](https://www.kaggle.com/c/twitter-sentiment-analysis2/data) &mdash; sentimentally labeled twitter messages.
 
@@ -298,7 +301,7 @@ If you want to run the code again, please, delete those folders and make sure th
 * Classifiers:
     * [Logistic Regression](https://en.wikipedia.org/wiki/Logistic_regression#:~:text=Logistic%20regression%20is%20a%20statistical,a%20form%20of%20binary%20regression)
     and [Parameters](https://spark.apache.org/docs/latest/api/scala/org/apache/spark/ml/classification/LogisticRegression.html)
-    * [Ranodm Forest](https://en.wikipedia.org/wiki/Random_forest) and [Parameters](https://spark.apache.org/docs/latest/api/scala/org/apache/spark/ml/classification/RandomForestClassifier.html)
+    * [Random Forest](https://en.wikipedia.org/wiki/Random_forest) and [Parameters](https://spark.apache.org/docs/latest/api/scala/org/apache/spark/ml/classification/RandomForestClassifier.html)
     * [Support Vector Clustering (SVC)](https://en.wikipedia.org/wiki/Support_vector_machine) and [Parameters](https://spark.apache.org/docs/latest/api/scala/org/apache/spark/ml/classification/LinearSVC.html)
     
 * Classification Metrics:
