@@ -59,8 +59,22 @@ The preprocessing consists of several part:
     3. Remove "stopwords" - words that do not influence the sentiment of the text (they, to, be, because, that, etc.)
 
     4. Transform words to vector model so that it can be fed into the classification model (Word2Vec)
-    
+
+`Stopwords` were taken from the default set of `org.apache.spark.ml.feature.StopWordsRemover`. We decided to keep words `against`, `no`, `not` as they may help to identify such negative tweets as `not cool!`.
+
 As it was mentioned before, we have already split the data into train and test samples, so we do not have to do it here.
+
+`Word2Vec` is trained on our training dataset when preprocessing it. After that, `word2vec` is saved to hdfs. When preprocessing test and stream datasets we just load the trained `word2vec` and use it. Also, we wanted to try preptrained `word2vec` but each time ran out of memory. Thus, we gave up that idea.
+
+```
+IMPORTANT
+
+Do not delete folders/files
+- word2VecModel
+- test_data.csv
+- train_data.csv
+```
+
 The preprocessing code is situated at the `src/main/scala` folder within `Preprocessing.scala` and `TrainWord2Vec.scala`.
 
 **3. Classification**
