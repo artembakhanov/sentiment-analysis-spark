@@ -256,7 +256,7 @@ All in all, `random forest` did the best job obtaining the highest precision and
 
 
 ## Code
-### To train the models, run
+### To train the models
 ```
 spark-submit --master yarn --class TrainClassifier sentiment-analysis-spark_2.12-3.0.1_1.0.jar
 ```
