@@ -8,7 +8,7 @@ Team management, stream reading, model creation and tuning (linear SVC), code re
 
 * **Dmitry Podpryatov**
 
-Model creation (random forest) and tuning (all but SVC), report
+Model creation (random forest) and tuning (all but SVC), data preprocessing report
 
 * **Kamil Kamaliev**
 
@@ -65,7 +65,7 @@ The preprocessing consists of several part:
 As it was mentioned before, we have already split the data into train and test samples, so we do not have to do it here.
 
 
-Training dataset is preproccessed by calling `prep_train(df_train)` and testing dataset is preproccessed by calling `prep_test(df_test)`. Steps are almost the same except the ones related to `word2vec`.
+Training dataset is preprocessed by calling `prep_train(df_train)` and testing dataset is preprocessed by calling `prep_test(df_test)`. Steps are almost the same except the ones related to `word2vec`.
 
 `Word2Vec` is trained on our training dataset when preprocessing it. After that, `word2vec` is saved to hdfs. When preprocessing test and stream datasets we just load the trained `word2vec` and use it. Also, we wanted to try preptrained `word2vec` but each time ran out of memory. Thus, we gave up that idea.
 
