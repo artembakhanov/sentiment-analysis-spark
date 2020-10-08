@@ -16,7 +16,7 @@ GitHub [repository](https://github.com/artembakhanov/sentiment-analysis-spark)
 
 * [Conclusion](#conclusion)
 
-* [Code](#code)
+* [How to Run](#how-to-run)
 
 * [Output](#output)
 
@@ -258,7 +258,12 @@ All in all, `random forest` did the best job obtaining the highest precision and
 
 ## Conclusion  
 
-## Code
+To sum up, we got practice with Apache Spark DataFrames, ML models, and Streams as well as improved our skills in Scala.
+Apache Spark provides great abstractions and interfaces for working with batched data and streams.
+It was a complicated industry-level project, however by dividing it into small parts and managing responsibilities it
+did not seem extremely hard, and overall, it was a great experience for all of us.
+
+## How to Run
 
 **To train the models**
 ```
